@@ -1,0 +1,61 @@
+{
+  "courses": [
+    {
+      "course_id": "CS101",
+      "name": "Python 程式設計",
+      "credits": 3,
+      "required": true,
+      "teacher": "林老師",
+      "capacity": 30,
+      "classroom": "A101",
+      "time_slots": [
+        {"day": 1, "period": "3"},
+        {"day": 1, "period": "4"}
+      ]
+    },
+    {
+      "course_id": "CS102",
+      "name": "資料結構",
+      "credits": 3,
+      "required": true,
+      "teacher": "王老師",
+      "capacity": 25,
+      "classroom": "B201",
+      "time_slots": [
+        {"day": 2, "period": "5"},
+        {"day": 2, "period": "6"}
+      ]
+    }
+  ],
+  "students": [
+    {
+      "student_id": "S001",
+      "name": "王小明",
+      "department": "資工系",
+      "enrolled_courses": ["CS101"],
+      "credit_limit": 24
+    },
+    {
+      "student_id": "S002",
+      "name": "李小華",
+      "department": "資工系",
+      "enrolled_courses": [],
+      "credit_limit": 24
+    }
+  ],
+  "classrooms": [
+    {
+      "room_id": "A101",
+      "capacity": 50,
+      "equipment": ["投影機"],
+      "building": "資訊大樓"
+    },
+    {
+      "room_id": "B201",
+      "capacity": 40,
+      "equipment": ["白板"],
+      "building": "工程大樓"
+    }
+  ],
+  "activities": []
+}

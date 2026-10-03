@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="800" viewBox="0 0 1200 800">
+  <defs>
+    <linearGradient id="bg" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0%" stop-color="#eaf2ff"/>
+      <stop offset="100%" stop-color="#dfe9ff"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="800" fill="url(#bg)"/>
+  <rect x="90" y="80" width="1020" height="640" rx="24" fill="#f7f9ff" stroke="#9bb8ff" stroke-width="4"/>
+  <circle cx="280" cy="290" r="110" fill="#d0ddff"/>
+  <circle cx="520" cy="290" r="110" fill="#bfd4ff"/>
+  <circle cx="760" cy="290" r="110" fill="#b5c9ff"/>
+  <circle cx="1000" cy="290" r="110" fill="#a9c0ff"/>
+  <rect x="160" y="430" width="880" height="130" rx="16" fill="#edf3ff"/>
+  <text x="600" y="500" font-size="42" text-anchor="middle" font-family="Microsoft JhengHei, Arial" fill="#1c2f5d" font-weight="700">
+    團隊會議照片佔位圖
+  </text>
+  <text x="600" y="560" font-size="26" text-anchor="middle" font-family="Microsoft JhengHei, Arial" fill="#4f628b">
+    請將實際會議照片替換到此位置
+  </text>
+</svg>
