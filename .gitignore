@@ -4,8 +4,9 @@ __pycache__/
 *.pyc
 *.pyo
 .DS_Store
-B_資料管理/
-C_選課限制/
-D_課表活動/
-E_搜尋效能/
-F_路徑事件/
+deliverables/
+archive/
+a_test_*/
+.test_runs/
+.downloads/
+.vscode/
