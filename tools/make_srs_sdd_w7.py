@@ -298,6 +298,12 @@ def week_commits() -> list[list[str]]:
     rows = [["Commit", "日期", "負責成員", "內容"]]
     for line in out.splitlines():
         sha, date, author, subject = line.split("|", 3)
+        if subject.startswith("Add files via upload"):
+            names = subprocess.run(
+                ["git", "-c", "core.quotepath=false", "show", "--name-only", "--format=", sha],
+                cwd=ROOT, capture_output=True, encoding="utf-8",
+            ).stdout.split()
+            subject += "（" + "、".join(names) + "）"
         rows.append([sha, date, AUTHORS.get(author, author), subject])
     if len(rows) == 1:
         rows.append(["（尚無）", "", "", "本週程式尚未提交"])
