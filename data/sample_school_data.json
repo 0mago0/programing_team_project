@@ -661,5 +661,87 @@
       "building": "圖書館"
     }
   ],
-  "activities": []
+  "activities": [
+    {
+      "activity_id": "A001",
+      "name": "程式設計讀書會",
+      "time_slots": [
+        {
+          "day": 4,
+          "period": "5"
+        }
+      ],
+      "expected_participants": 20,
+      "activity_type": "讀書會",
+      "classroom": "L102",
+      "venue_requirements": [
+        "電腦"
+      ],
+      "participants": [
+        "S001",
+        "S002"
+      ]
+    },
+    {
+      "activity_id": "A002",
+      "name": "社團博覽會",
+      "time_slots": [
+        {
+          "day": 6,
+          "period": "5"
+        },
+        {
+          "day": 6,
+          "period": "6"
+        }
+      ],
+      "expected_participants": 60,
+      "activity_type": "社團",
+      "classroom": "C305",
+      "venue_requirements": [],
+      "participants": [
+        "S004",
+        "S014"
+      ]
+    },
+    {
+      "activity_id": "A003",
+      "name": "系學會迎新",
+      "time_slots": [
+        {
+          "day": 5,
+          "period": "9"
+        }
+      ],
+      "expected_participants": 50,
+      "activity_type": "系學會",
+      "classroom": "A101",
+      "venue_requirements": [
+        "投影機"
+      ],
+      "participants": [
+        "S001",
+        "S006",
+        "S011"
+      ]
+    },
+    {
+      "activity_id": "A004",
+      "name": "英文檢定說明會",
+      "time_slots": [
+        {
+          "day": 1,
+          "period": "5"
+        }
+      ],
+      "expected_participants": 40,
+      "activity_type": "講座",
+      "classroom": "B201",
+      "venue_requirements": [],
+      "participants": [
+        "S005",
+        "S013"
+      ]
+    }
+  ]
 }
