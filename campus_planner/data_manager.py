@@ -11,8 +11,8 @@ from pathlib import Path
 from typing import Any
 
 from .data_store import load_school_data, save_school_data
-from .models import Classroom, Course, Student, TimeSlot
-from .validation import validate_classroom, validate_course, validate_student
+from .models import Activity, Classroom, Course, Student, TimeSlot
+from .validation import validate_activity, validate_classroom, validate_course, validate_student
 
 
 @dataclass
@@ -20,6 +20,7 @@ class SchoolCatalog:
     courses: dict[str, Course] = field(default_factory=dict)
     students: dict[str, Student] = field(default_factory=dict)
     classrooms: dict[str, Classroom] = field(default_factory=dict)
+    activities: dict[str, Activity] = field(default_factory=dict)
 
 
 # ---------- 選課人數 ----------
@@ -224,6 +225,26 @@ def find_classrooms(
     return sorted(results, key=lambda r: r.room_id)
 
 
+# ---------- 活動（F4 完整功能於第 8 週擴充） ----------
+
+def add_activity(catalog: SchoolCatalog, activity: Activity) -> list[str]:
+    errors = validate_activity(activity)
+    if activity.activity_id in catalog.activities:
+        errors.insert(0, "活動代號不得重複")
+    if activity.classroom and activity.classroom not in catalog.classrooms:
+        errors.append(f"教室 {activity.classroom} 不存在")
+    errors += [f"報名學生 {sid} 不存在" for sid in activity.participants if sid not in catalog.students]
+    if not errors:
+        catalog.activities[activity.activity_id] = activity
+    return errors
+
+
+def activities_of_student(catalog: SchoolCatalog, student_id: str) -> list[Activity]:
+    """學生參加的活動；參加名單以活動的 participants 為唯一來源。結果依代號排序。"""
+    found = [a for a in catalog.activities.values() if student_id in a.participants]
+    return sorted(found, key=lambda a: a.activity_id)
+
+
 # ---------- JSON 轉換與存取 ----------
 
 def course_from_dict(data: dict[str, Any]) -> Course:
@@ -268,11 +289,28 @@ def classroom_from_dict(data: dict[str, Any]) -> Classroom:
         raise ValueError(f"教室資料缺少欄位或格式錯誤: {exc}") from exc
 
 
+def activity_from_dict(data: dict[str, Any]) -> Activity:
+    try:
+        slots = [TimeSlot(slot["day"], str(slot["period"])) for slot in data.get("time_slots", [])]
+        return Activity(
+            activity_id=data["activity_id"],
+            name=data["name"],
+            time_slots=slots,
+            expected_participants=data["expected_participants"],
+            activity_type=data.get("activity_type", "一般"),
+            classroom=data.get("classroom", ""),
+            venue_requirements=list(data.get("venue_requirements", [])),
+            participants=list(data.get("participants", [])),
+        )
+    except (KeyError, TypeError) as exc:
+        raise ValueError(f"活動資料缺少欄位或格式錯誤: {exc}") from exc
+
+
 def catalog_from_dict(data: dict[str, Any]) -> tuple[SchoolCatalog, list[str]]:
     """把 JSON 物件轉成 SchoolCatalog。
 
     單筆資料錯誤只會略過該筆並記錄原因，不會讓整批載入失敗。
-    依教室 → 課程 → 學生的順序載入，讓學生的已選課程可以檢查是否存在。
+    依教室 → 課程 → 學生 → 活動的順序載入，讓學生的已選課程與活動的報名學生可以檢查是否存在。
     """
     catalog = SchoolCatalog()
     errors: list[str] = []
@@ -280,6 +318,7 @@ def catalog_from_dict(data: dict[str, Any]) -> tuple[SchoolCatalog, list[str]]:
         ("classrooms", "教室", classroom_from_dict, add_classroom, "room_id"),
         ("courses", "課程", course_from_dict, add_course, "course_id"),
         ("students", "學生", student_from_dict, add_student, "student_id"),
+        ("activities", "活動", activity_from_dict, add_activity, "activity_id"),
     ]
     for key, label, convert, add, id_field in sections:
         for index, record in enumerate(data.get(key, [])):
@@ -295,8 +334,8 @@ def catalog_from_dict(data: dict[str, Any]) -> tuple[SchoolCatalog, list[str]]:
 
 
 def catalog_to_dict(catalog: SchoolCatalog) -> dict[str, Any]:
-    def slot_list(course: Course) -> list[dict[str, Any]]:
-        return [{"day": slot.day, "period": slot.period} for slot in course.time_slots]
+    def slot_list(item: Course | Activity) -> list[dict[str, Any]]:
+        return [{"day": slot.day, "period": slot.period} for slot in item.time_slots]
 
     return {
         "courses": [
@@ -330,6 +369,19 @@ def catalog_to_dict(catalog: SchoolCatalog) -> dict[str, Any]:
                 "building": r.building,
             }
             for r in catalog.classrooms.values()
+        ],
+        "activities": [
+            {
+                "activity_id": a.activity_id,
+                "name": a.name,
+                "time_slots": slot_list(a),
+                "expected_participants": a.expected_participants,
+                "activity_type": a.activity_type,
+                "classroom": a.classroom,
+                "venue_requirements": list(a.venue_requirements),
+                "participants": list(a.participants),
+            }
+            for a in catalog.activities.values()
         ],
     }
 

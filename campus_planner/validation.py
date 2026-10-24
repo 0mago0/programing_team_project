@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Iterable
 
-from .models import VALID_DAYS, VALID_PERIODS, Classroom, Course, Student, TimeSlot
+from .models import VALID_DAYS, VALID_PERIODS, Activity, Classroom, Course, Student, TimeSlot
 
 
 def _is_blank(value: object) -> bool:
@@ -86,6 +86,34 @@ def validate_classroom(classroom: Classroom) -> list[str]:
     return errors
 
 
+def validate_activity(activity: Activity) -> list[str]:
+    errors: list[str] = []
+
+    if _is_blank(activity.activity_id):
+        errors.append("活動代號不可空白")
+    if _is_blank(activity.name):
+        errors.append("活動名稱不可空白")
+    if not activity.time_slots:
+        errors.append("活動至少要有一個時段")
+    if not _is_positive_int(activity.expected_participants):
+        errors.append("預計人數必須為正整數")
+    elif len(activity.participants) > activity.expected_participants:
+        errors.append(f"報名人數 {len(activity.participants)} 超過預計人數 {activity.expected_participants}")
+    if len(set(activity.participants)) != len(activity.participants):
+        errors.append("報名學生不得重複")
+
+    seen: set[TimeSlot] = set()
+    for slot in activity.time_slots:
+        slot_errors = validate_time_slot(slot)
+        errors.extend(slot_errors)
+        if not slot_errors:
+            if slot in seen:
+                errors.append(f"時段重複: 星期{slot.day} 第{slot.period}節")
+            seen.add(slot)
+
+    return errors
+
+
 def check_time_conflict(slot_a: TimeSlot, slot_b: TimeSlot) -> bool:
     return slot_a.day == slot_b.day and slot_a.period == slot_b.period
 
@@ -102,26 +130,3 @@ def check_slot_list_conflict(slot_list_a: Iterable[TimeSlot], slot_list_b: Itera
                 break
 
     return conflicts
-
-
-def evaluate_enrollment(student: Student, course: Course, course_catalog: dict[str, Course]) -> list[str]:
-    errors: list[str] = []
-
-    if student.student_id not in {"", None} and course.course_id in student.enrolled_courses:
-        errors.append(f"學生 {student.student_id} 已選修 {course.course_id}")
-
-    if course.course_id not in course_catalog:
-        errors.append(f"課程 {course.course_id} 不存在")
-        return errors
-
-    current_credits = sum(course_catalog[cid].credits for cid in student.enrolled_courses if cid in course_catalog)
-    projected_credits = current_credits + course.credits
-    if projected_credits > student.credit_limit:
-        errors.append(
-            f"加選後學分 {projected_credits} 超過上限 {student.credit_limit}"
-        )
-
-    if len(student.enrolled_courses) >= course.capacity:
-        errors.append(f"課程 {course.course_id} 已額滿")
-
-    return errors

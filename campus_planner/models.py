@@ -5,7 +5,9 @@ from typing import List
 
 
 VALID_DAYS = set(range(1, 8))
-VALID_PERIODS = {"1", "2", "3", "4", "5", "6", "7", "8", "9", "a", "b", "c"}
+# 節次的唯一定義：順序即課表矩陣的欄位順序
+PERIOD_ORDER = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "a", "b", "c"]
+VALID_PERIODS = set(PERIOD_ORDER)
 
 
 @dataclass(frozen=True)
@@ -45,11 +47,13 @@ class Classroom:
 
 @dataclass
 class Activity:
+    """校園活動。時間與課程一樣以 TimeSlot（星期＋節次）表示，共用同一套衝突檢查。"""
+
     activity_id: str
     name: str
-    date: str
-    start_time: str
-    end_time: str
-    expected_participants: int
-    activity_type: str
+    time_slots: List[TimeSlot] = field(default_factory=list)
+    expected_participants: int = 1
+    activity_type: str = "一般"
+    classroom: str = ""
     venue_requirements: List[str] = field(default_factory=list)
+    participants: List[str] = field(default_factory=list)

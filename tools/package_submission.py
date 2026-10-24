@@ -1,9 +1,15 @@
-"""Package the edited A submission without regenerating personal records."""
+"""Package the edited A submission without regenerating personal records.
+
+用法：python tools/package_submission.py [deliverables 內的資料夾名稱]
+未指定時打包第 5 週繳交包。
+"""
 from pathlib import Path
+import sys
 import zipfile
 
 root = Path(__file__).resolve().parents[1]
-source = root / 'deliverables' / 'A_第5週繳交包_五人版'
+name = sys.argv[1] if len(sys.argv) > 1 else 'A_第5週繳交包_五人版'
+source = root / 'deliverables' / name
 archive = source.with_suffix('.zip')
 if not source.is_dir():
     raise SystemExit('找不到 A 繳交資料夾')
