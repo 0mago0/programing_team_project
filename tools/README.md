@@ -9,6 +9,7 @@
 - `python tools/make_srs_sdd_w7.py`：產生第 7 週「系統需求設計規格書 V2.0」PDF，版面與共用函式沿用 make_srs_sdd.py；本週 Commit 依 git log 自動列出，會議日期地點改檔案中的 MEETING。
 - `python tools/make_srs_sdd_w8.py`：產生第 8 週「系統需求設計規格書 V3.0」PDF；測試分類表即時產生，會議資訊改檔案中的 MEETING，照片放在 docs/05_會議/第8週_團隊討論照片.jpg。
 - `python tools/test_report_data.py`：統計各測試檔的正常、邊界、錯誤案例數並執行全部測試。
+- `python tools/make_video_assets.py`：產生影片 I 的 1920×1080 畫面圖片到 docs/03_週報/影片I素材/；程式碼取自 git 歷史，終端機畫面為實際執行結果；I-4 對話截圖需自行放入。
 
 PDF 工具需另外安裝 reportlab，使用 Windows 中文字型。舊報告 PDF 已刪除，需產生時請依最新 Markdown 重新生成並檢查版面。
 舊產檔與補紀錄腳本已刪除，避免覆蓋已填入的姓名與副組長資訊。
