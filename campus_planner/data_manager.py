@@ -321,7 +321,13 @@ def catalog_from_dict(data: dict[str, Any]) -> tuple[SchoolCatalog, list[str]]:
         ("activities", "活動", activity_from_dict, add_activity, "activity_id"),
     ]
     for key, label, convert, add, id_field in sections:
-        for index, record in enumerate(data.get(key, [])):
+        records = data.get(key)
+        if records is None:
+            records = []
+        elif not isinstance(records, list):
+            errors.append(f"{label}資料（{key}）格式錯誤：應為清單，實際為 {type(records).__name__}，已略過")
+            continue
+        for index, record in enumerate(records):
             name = record.get(id_field, f"#{index + 1}") if isinstance(record, dict) else f"#{index + 1}"
             try:
                 item = convert(record)
@@ -387,6 +393,8 @@ def catalog_to_dict(catalog: SchoolCatalog) -> dict[str, Any]:
 
 
 def load_catalog(path: str | Path) -> tuple[SchoolCatalog, list[str]]:
+    if not Path(path).exists():
+        return SchoolCatalog(), [f"找不到資料檔：{path}"]
     try:
         data = load_school_data(path)
     except ValueError as exc:

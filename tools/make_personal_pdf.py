@@ -30,6 +30,8 @@ from reportlab.platypus import Paragraph, SimpleDocTemplate, Spacer, Table, Tabl
 
 FONT_FILE = Path(r"C:\Windows\Fonts\msjh.ttc")
 FONT = "MSJH"
+BOLD_FILE = Path(r"C:\Windows\Fonts\msjhbd.ttc")
+BOLD = "MSJHB"
 BLUE = colors.HexColor("#2E74B5")
 HEADER_BG = colors.HexColor("#D9E2F3")
 BORDER = colors.HexColor("#A6A6A6")
@@ -48,9 +50,11 @@ STYLES = {
 
 
 def inline(text: str) -> str:
-    """跳脫 HTML 特殊字元，保留 <br> 換行。"""
+    """跳脫 HTML 特殊字元，保留 <br> 換行；**文字** 轉為粗體。"""
     parts = re.split(r"<br\s*/?>", text)
-    return "<br/>".join(html.escape(p.strip(), quote=False) for p in parts)
+    escaped = "<br/>".join(html.escape(p.strip(), quote=False) for p in parts)
+    face = BOLD if BOLD_FILE.exists() else FONT
+    return re.sub(r"\*\*(.+?)\*\*", lambda m: f'<font name="{face}">{m.group(1)}</font>', escaped)
 
 
 def parse_row(line: str) -> list[str]:
@@ -156,6 +160,8 @@ def main() -> None:
     if not FONT_FILE.exists():
         raise SystemExit(f"找不到字型：{FONT_FILE}")
     pdfmetrics.registerFont(TTFont(FONT, str(FONT_FILE), subfontIndex=0))
+    if BOLD_FILE.exists():
+        pdfmetrics.registerFont(TTFont(BOLD, str(BOLD_FILE), subfontIndex=0))
 
     doc = SimpleDocTemplate(
         str(target), pagesize=A4,
