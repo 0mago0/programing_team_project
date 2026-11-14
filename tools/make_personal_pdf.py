@@ -26,7 +26,7 @@ from reportlab.lib.styles import ParagraphStyle
 from reportlab.lib.units import mm
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
-from reportlab.platypus import Paragraph, SimpleDocTemplate, Spacer, Table, TableStyle
+from reportlab.platypus import CondPageBreak, Paragraph, SimpleDocTemplate, Spacer, Table, TableStyle
 
 FONT_FILE = Path(r"C:\Windows\Fonts\msjh.ttc")
 FONT = "MSJH"
@@ -42,8 +42,8 @@ MARGIN = 20 * mm
 STYLES = {
     "title": ParagraphStyle("title", fontName=FONT, fontSize=22, leading=30, alignment=1, textColor=TEXT, spaceAfter=10, wordWrap="CJK"),
     "subtitle": ParagraphStyle("subtitle", fontName=FONT, fontSize=9, leading=13, textColor=TEXT, spaceAfter=8, wordWrap="CJK"),
-    "h1": ParagraphStyle("h1", fontName=FONT, fontSize=17, leading=24, textColor=BLUE, spaceBefore=10, spaceAfter=6, wordWrap="CJK", keepWithNext=1),
-    "h2": ParagraphStyle("h2", fontName=FONT, fontSize=11.5, leading=16, textColor=BLUE, spaceBefore=6, spaceAfter=4, wordWrap="CJK", keepWithNext=1),
+    "h1": ParagraphStyle("h1", fontName=FONT, fontSize=17, leading=24, textColor=BLUE, spaceBefore=10, spaceAfter=6, wordWrap="CJK"),
+    "h2": ParagraphStyle("h2", fontName=FONT, fontSize=11.5, leading=16, textColor=BLUE, spaceBefore=6, spaceAfter=4, wordWrap="CJK"),
     "body": ParagraphStyle("body", fontName=FONT, fontSize=10, leading=16, textColor=TEXT, spaceAfter=6, wordWrap="CJK"),
     "cell": ParagraphStyle("cell", fontName=FONT, fontSize=9, leading=14, textColor=TEXT, wordWrap="CJK"),
 }
@@ -137,6 +137,8 @@ def markdown_to_story(text: str, frame_width: float) -> tuple[list, str]:
             flush()
             level = len(heading.group(1))
             style = {1: "title", 2: "h1", 3: "h2"}[level]
+            if level > 1:
+                story.append(CondPageBreak(30 * mm))  # 標題不留在頁尾；表格可跨頁，不整個移到下一頁
             story.append(Paragraph(inline(heading.group(2)), STYLES[style]))
             after_title = level == 1
             i += 1

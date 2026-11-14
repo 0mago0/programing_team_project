@@ -4,7 +4,7 @@
 輸出：docs/03_週報/影片I素材/
 
 程式碼畫面取自 git 歷史中的實際版本；終端機畫面在產生時實際執行取得。
-I-4 的對話截圖必須使用團隊實際紀錄，本工具不產生。需要 Pillow 與 Windows 字型。
+I-4 畫面只引用個人紀錄中已記錄的 Prompt 原文，不另外編寫對話。需要 Pillow 與 Windows 字型。
 """
 from __future__ import annotations
 
@@ -141,7 +141,7 @@ def s01_title():
 
 
 def s02_problem():
-    img, d = canvas("I-1 問題情境", "說明：C")
+    img, d = canvas("I-1 問題情境", "第 1 段")
     d.text((90, 170), "學生加選一門課時，可能同時遇到五種問題：", font=font(40, bold=True), fill=NAVY)
     items = [("學生衝堂", "與已選課程同時段"), ("活動衝突", "與參加的活動撞時間"), ("教室衝堂", "教室該時段已被用"),
              ("學分限制", "加選後超過上限"), ("人數限制", "課程已額滿")]
@@ -160,7 +160,7 @@ def s02_problem():
 
 
 def s03_decompose():
-    img, d = canvas("I-2 問題分解", "說明：B")
+    img, d = canvas("I-2 問題分解", "第 1 段")
     box(d, (80, 450, 330, 610), "加選請求\n學號＋課程", fill="#E2EFDA", outline=GREEN, color="#375623")
     checks = ["① 時段是否重疊", "② 學生衝堂", "③ 活動衝突", "④ 教室衝堂", "⑤ 學分與額滿"]
     for i, text in enumerate(checks):
@@ -177,7 +177,7 @@ def s03_decompose():
 
 
 def s04_draft():
-    img, d = canvas("I-3 原始解法：第 5 週草稿", "說明：C")
+    img, d = canvas("I-3 原始解法：第 5 週草稿", "第 2 段")
     lines = git_show("c53c649:C_選課規則.py")
     start = next(i for i, l in enumerate(lines) if l.startswith("def check_time_conflict"))
     code = lines[start:start + 3]
@@ -192,7 +192,7 @@ def s04_draft():
 
 
 def s05_old_capacity():
-    img, d = canvas("I-3 原始解法：第 6 週額滿判斷", "說明：C")
+    img, d = canvas("I-3 原始解法：第 6 週額滿判斷", "第 2 段")
     lines = git_show("3487ed4:campus_planner/validation.py")
     start = next(i for i, l in enumerate(lines) if "len(student.enrolled_courses) >= course.capacity" in l)
     code = lines[start:start + 2]
@@ -207,8 +207,42 @@ def s05_old_capacity():
     return img
 
 
+def s06_prompts():
+    img, d = canvas("I-4 AI 協作過程：兩次實際提問的對照", "第 3 段")
+    cards = [
+        ("提問一：範圍很大", "成員 A 第 7 週個人紀錄（Claude）", RED, "#FDE9E7",
+         ["「沒關係 先做(週次7/Iteration 2)的部分 然後生成",
+          "團隊繳交部分與個人部分的pdf 圖片是這周照片」"],
+         ["AI 一次產生 F2、F3 初版程式與 45 項測試", "但沒有說明規則 → 加選後學分顯示錯誤、示範資料無衝突",
+          "都要靠執行與測試才發現"]),
+        ("提問二：具體、可驗證", "成員 C 第 6 週個人紀錄（Gemini）", GREEN, "#E2EFDA",
+         ["「我正在用 pytest 寫單元測試，需要測試遇到多種無效學分",
+          "輸入（如 0, -3, 3.5, True, '3'）時是否回傳錯誤。",
+          "有什麼寫法能不用把同一個斷言複製五次？」"],
+         ["AI 建議 @pytest.mark.parametrize，完全採納", "暫時關閉型別檢查，確認 pytest 能報出 True 這個參數失敗"]),
+    ]
+    for i, (head, src, color, fill, prompt, notes) in enumerate(cards):
+        x0 = 90 + i * 890
+        d.rounded_rectangle((x0, 160, x0 + 850, 720), radius=18, fill=fill, outline=color, width=4)
+        d.text((x0 + 35, 185), head, font=font(40, bold=True), fill=color)
+        d.text((x0 + 35, 250), src, font=font(28), fill=GREY)
+        y = 320
+        for line in prompt:
+            draw_mixed(d, (x0 + 35, y), line, 27, "#202020")
+            y += 46
+        y += 40
+        for line in notes:
+            draw_mixed(d, (x0 + 35, y), "・" + line if not line.startswith("都要") else "　" + line, 27, NAVY)
+            y += 50
+    d.rounded_rectangle((90, 760, 1830, 940), radius=18, fill="#FFF2CC", outline="#BF9000", width=4)
+    d.text((130, 785), "差別：提問有沒有說清楚「目標、輸入範例、想要的結果」", font=font(36, bold=True), fill="#7F6000")
+    d.text((130, 855), "說得越具體，AI 的回答越容易驗證；範圍太大時，就要靠我們自己跑測試、看輸出把關。", font=font(32), fill="#3F3F3F")
+    d.text((1100, 1030), "Prompt 均為個人紀錄中的原文", font=font(26), fill=GREY)
+    return img
+
+
 def s07_reject_data():
-    img, d = canvas("I-5 AI 建議的驗證①：不讓資料配合程式", "說明：E")
+    img, d = canvas("I-5 AI 建議的驗證①：不讓資料配合程式", "第 3 段")
     box(d, (90, 200, 880, 420), "問題\n主程式示範時，部分查詢查不到資料", size=36)
     box(d, (1040, 200, 1830, 420), "AI 建議\n修改範例資料：系級去掉年級、\n讓某門課額滿", size=34, fill="#FDE9E7", outline=RED, color=RED)
     arrow(d, 880, 310, 1040, 310)
@@ -222,7 +256,7 @@ def s07_reject_data():
 
 
 def s08_credit_display():
-    img, d = canvas("I-5 AI 建議的驗證②：加選後的學分顯示", "說明：A")
+    img, d = canvas("I-5 AI 建議的驗證②：加選後的學分顯示", "第 4 段")
     d.text((90, 170), "AI 產生的 enroll_course，加選成功後把「目前學分」改成加選後的數字", font=font(36), fill="#3F3F3F")
     terminal(d, (90, 250, 930, 640), ["修正前（執行主程式時看到）", "選課結果：成功", "目前學分：3", "加選後學分：3", "學分上限：22"],
              highlight={"目前學分": "#FF7B72", "加選後學分": "#FF7B72"})
@@ -235,7 +269,7 @@ def s08_credit_display():
 
 
 def s09_zero_conflicts():
-    img, d = canvas("I-5 AI 建議的驗證③：窮舉找不到衝突", "說明：A")
+    img, d = canvas("I-5 AI 建議的驗證③：窮舉找不到衝突", "第 4 段")
     script = (
         "from collections import Counter\n"
         "from campus_planner.data_manager import load_catalog\n"
@@ -258,7 +292,7 @@ def s09_zero_conflicts():
 
 
 def s10_f2_output():
-    img, d = canvas("I-6 修改後：一次列出所有衝突", "說明：D")
+    img, d = canvas("I-6 修改後：一次列出所有衝突", "第 4 段")
     out = run(["main.py", "--demo"]).splitlines()
     start = out.index("[多項衝突一次列出]")
     lines = ["$ python main.py --demo"] + out[start:start + 10]
@@ -269,7 +303,7 @@ def s10_f2_output():
 
 
 def s11_tests():
-    img, d = canvas("I-6 自動化測試結果", "說明：D")
+    img, d = canvas("I-6 自動化測試結果", "第 5 段")
     f2 = run(["-m", "pytest", "tests/test_f2_enrollment.py", "-q", "-p", "no:cacheprovider"]).strip().splitlines()[-1]
     allr = run(["-m", "pytest", "-q", "-p", "no:cacheprovider"]).strip().splitlines()[-1]
     terminal(d, (90, 170, 1830, 470), ["$ python -m pytest tests/test_f2_enrollment.py -q", f2,
@@ -287,7 +321,7 @@ def s11_tests():
 
 
 def s12_compare():
-    img, d = canvas("I-6 修改前後比較", "說明：D")
+    img, d = canvas("I-6 修改前後比較", "第 5 段")
     rows = [("", "修改前", "修改後"),
             ("時段比對", "沒有比對星期與節次", "逐一比對，連續節次合併"),
             ("額滿判斷", "看學生自己選幾門課", "看這門課實際選修人數"),
@@ -309,7 +343,7 @@ def s12_compare():
 
 
 def s13_team():
-    img, d = canvas("I-7 團隊反思", "說明：全員")
+    img, d = canvas("I-7 團隊反思", "第 5 段")
     photo_into(img, ROOT / "docs" / "05_會議" / "第8週_團隊討論照片.jpg", (90, 150, 760, 1010))
     for i, (who, text) in enumerate([
         ("AI 有幫助的地方", "快速產生初版程式與測試骨架\n提供測試寫法、找錯誤原因"),
@@ -344,6 +378,7 @@ SCENES = [
     ("03_I-2_問題分解.png", s03_decompose),
     ("04_I-3_第5週草稿.png", s04_draft),
     ("05_I-3_舊版額滿判斷.png", s05_old_capacity),
+    ("06_I-4_兩次提問對照.png", s06_prompts),
     ("07_I-5_拒絕修改資料.png", s07_reject_data),
     ("08_I-5_學分顯示修正.png", s08_credit_display),
     ("09_I-5_窮舉找不到衝突.png", s09_zero_conflicts),
@@ -359,6 +394,4 @@ if __name__ == "__main__":
     for name, make in SCENES:
         make().save(OUT / name)
         print(f"已產生：{name}")
-    (OUT / "06_I-4_請放實際對話截圖.txt").write_text(
-        "I-4 AI 協作過程：請放團隊實際與 AI 的兩輪對話截圖（只截相關片段）。\n"
-        "作業規定影片內容必須能由繳交資料追溯，不可事後重寫 Prompt 代替原始紀錄。\n", encoding="utf-8")
+    (OUT / "06_I-4_請放實際對話截圖.txt").unlink(missing_ok=True)
