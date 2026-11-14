@@ -1,10 +1,10 @@
-"""把影片 I 的畫面圖片組成 PowerPoint，並把講稿放進每頁的備忘稿。
+"""把影片 I 的畫面圖片組成 PowerPoint（講稿放進每頁的備忘稿）與 PDF。
 
 用法：python tools/make_video_pptx.py
 輸入：docs/03_週報/影片I素材/*.png、docs/03_週報/第8週_影片I講稿.md
-輸出：docs/03_週報/第8週_影片I投影片.pptx
+輸出：docs/03_週報/第8週_影片I投影片.pptx、第8週_影片I投影片.pdf
 
-先執行 make_video_assets.py 產生圖片。需要 python-pptx。
+先執行 make_video_assets.py 產生圖片。需要 python-pptx 與 reportlab。
 """
 from __future__ import annotations
 
@@ -13,12 +13,15 @@ from pathlib import Path
 
 from pptx import Presentation
 from pptx.util import Emu
+from reportlab.pdfgen import canvas
 
 ROOT = Path(__file__).resolve().parents[1]
 WEEK = ROOT / "docs" / "03_週報"
 ASSETS = WEEK / "影片I素材"
 SCRIPT = WEEK / "第8週_影片I講稿.md"
 OUT = WEEK / "第8週_影片I投影片.pptx"
+PDF_OUT = OUT.with_suffix(".pdf")
+PDF_W, PDF_H = 960, 540  # 點，16:9
 SLIDE_W, SLIDE_H = Emu(12192000), Emu(6858000)  # 16:9
 
 
@@ -53,6 +56,14 @@ def main() -> None:
         print(f"{image.name}：{'有' if image.name in notes else '無'}講稿")
     prs.save(OUT)
     print(f"已產生：{OUT}")
+
+    pdf = canvas.Canvas(str(PDF_OUT), pagesize=(PDF_W, PDF_H))
+    pdf.setTitle("影片 I 投影片")
+    for image in sorted(ASSETS.glob("*.png")):
+        pdf.drawImage(str(image), 0, 0, PDF_W, PDF_H)
+        pdf.showPage()
+    pdf.save()
+    print(f"已產生：{PDF_OUT}")
 
 
 if __name__ == "__main__":
