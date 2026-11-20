@@ -14,3 +14,4 @@
 
 PDF 工具需另外安裝 reportlab，使用 Windows 中文字型。舊報告 PDF 已刪除，需產生時請依最新 Markdown 重新生成並檢查版面。
 舊產檔與補紀錄腳本已刪除，避免覆蓋已填入的姓名與副組長資訊。
+- `python tools/package_group_submission.py <影片檔.mp4>`：依新版團體作業格式（組別_學號_姓名/Personal、Group）產生第 8 週繳交 ZIP 到 deliverables/。
