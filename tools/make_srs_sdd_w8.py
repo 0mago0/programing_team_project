@@ -30,7 +30,10 @@ OUTPUT = ROOT / "docs" / "03_週報" / "第8週_系統需求設計規格書.pdf"
 PHOTO = ROOT / "docs" / "05_會議" / "第8週_團隊討論照片.jpg"
 DATE = "2026/10/30"
 WEEK_SINCE = "2026-10-25"
-AUTHORS = {"0mago0": "A", "dolphin12088": "B", "zhiyun0916": "C", "nNn-3361": "D", "linsam960421-lgtm": "E"}
+AUTHORS = {"0mago0": "A", "dolphin12088": "B", "zhiyun0916": "C", "nNn-3361": "D", "linsam960421-lgtm": "E",
+           "newcollegestudent90025": "F"}
+# F 於第 8 週加入，只列在第 8 週之後的文件
+MEMBERS_W8 = MEMBERS + [("F", "張瓈安", "115590025", "t115590025@ntut.org.tw")]
 
 
 # ---------- 圖 ----------
@@ -255,7 +258,7 @@ def cover() -> list:
              P("Software Design Document (SDD)", "cover_en"), Spacer(1, 30),
              P("第 8 週 Iteration 3：F4 活動與教室配置、F5 多條件課程篩選、F6 資料儲存（期中系統 v1.0）", "cover_member"),
              Spacer(1, 130)]
-    for _, name, sid, mail in MEMBERS:
+    for _, name, sid, mail in MEMBERS_W8:
         story.append(P(esc(f"{name}　{sid}　{mail}"), "cover_member"))
     story += [Spacer(1, 50), P("計算機程式設計團體作業｜第 15 組", "cover_member"),
               P("Department of Computer Science &amp; Information Engineering", "cover_en"),
@@ -360,12 +363,12 @@ catalog, errors = load_data("backup")                # 格式錯誤的列略過�
             "3. F6：CSV 與 JSON 儲存載入，單筆錯誤只略過該筆；修正 Code Review 第 1 項。",
             "4. 期中系統 v1.0：互動式選單與 F1～F6 示範；回應 E 對 main.py 的 Code Review。",
             "5. 自動化測試 169 項全部通過，含 F1～F6 整合測試。",
+            "6. 影片 I 完成，由本週加入的成員 F 負責影片製作。",
         ]),
         P("哪些工作尚未完成？（Incomplete Work）", "label"),
         *items([
             "1. Code Review 第 2～7 項（B）、C 對 F3 的 2 項建議（D）尚未處理。",
             "2. 範例資料仍缺少時段重疊的課程（D8）。",
-            "3. 影片 I 待錄製。",
         ]),
         P("本次 Iteration 遇到哪些問題？（Problems）", "label"),
         *items([
@@ -378,6 +381,7 @@ catalog, errors = load_data("backup")                # 格式錯誤的列略過�
             "1. 第 10 週起新增功能採 TDD：先寫失敗的測試，再實作，保留 Red／Green／Refactor 紀錄。",
             "2. Code Review 的問題設定處理期限，在每週會議追蹤。",
             "3. 範例資料補充重疊與額滿情境，讓驗收可直接以範例資料呈現。",
+            "4. 新成員 F 加入，恢復六人分工：F9、F10 由 C、D 移回 F 負責，第 10 週開始需求分析與介面設計。",
         ]),
         PageBreak(),
     ]
@@ -391,7 +395,8 @@ def section_pm() -> list:
                    ["B", "資料管理", "修正 Code Review 第 2～7 項", "檢視 C 的 F5"],
                    ["C", "選課限制", "F5 多條件課程篩選與測試", "檢視 D 的 F4"],
                    ["D", "課表活動", "F4 活動與教室配置與測試", "檢視 E 的資料"],
-                   ["E（副組長）", "搜尋效能", "範例資料補充、影片 I 剪輯", "檢視 A 的 F6"]]
+                   ["E（副組長）", "搜尋效能", "範例資料補充", "檢視 A 的 F6"],
+                   ["F", "路徑與事件", "影片 I 製作（本週加入）", "第 10 週起負責 F9、F10"]]
     return [
         P("4. 專案管理 (Project Management)", "h1"),
         P("4.1 工作分解表 (Work Breakdown Structure)", "h2"),
@@ -402,7 +407,7 @@ def section_pm() -> list:
         task("3.4", "F6 資料儲存", "CSV 與 JSON 儲存載入、逐筆驗證與測試。", 2, "A"),
         task("3.5", "選單 v1.0 與整合測試", "互動式選單、F1～F6 整合測試、測試報告。", 2, "A"),
         task("3.6", "Code Review 修正", "B 修正第 2～7 項；A 回應 E 的 Review；D 回應 C 的 Review。", 1, "A、B、D"),
-        task("3.7", "影片 I", "選題、分鏡、錄製與剪輯。", 2, "全員（E 剪輯）"),
+        task("3.7", "影片 I", "選題、分鏡、講稿與投影片、錄製與剪輯。", 2, "全員（F 製作）"),
         Spacer(1, 8),
         table(member_rows, [13, 14, 39, 34]),
         Spacer(1, 10),
